@@ -12,6 +12,7 @@ class OddscheckerSpider(scrapy.Spider):
     ]
 
     def parse(self, response):
+        
         games = response.xpath('//*[@id="fixtures"]/div/table/tbody/tr/td[5]/a')
         for game in games:
             link = game.xpath('.//@href').extract()
@@ -46,23 +47,57 @@ class OddscheckerSpider(scrapy.Spider):
             winner_1_odds_i = winner_1_odds.xpath('@data-odig').extract()[i]
             winner_2_odds_i = winner_2_odds.xpath('@data-odig').extract()[i]
             draw_odds_i = draw_odds.xpath('@data-odig').extract()[i]
-            print matchname,',',timestamp,',',bookie,',',winner_1,',',winner_1_odds_i
-            print matchname,',',timestamp,',',bookie,',',winner_2,',',winner_2_odds_i
-            print matchname,',',timestamp,',',bookie,',draw,',draw_odds_i
+            
+            data_1 = {
+                "time": timestamp,
+                "match": matchname,
+                "bookie": bookie,
+                "outcome": winner_1,
+                "decodds": winner_1_odds_i
+            }
+            
+            data_2 = {
+                "time": timestamp,
+                "match": matchname,
+                "bookie": bookie,
+                "outcome": winner_2,
+                "decodds": winner_2_odds_i
+            }
+            
+            data_draw = {
+                "time": timestamp,
+                "match": matchname,
+                "bookie": bookie,
+                "outcome": 'draw',
+                "decodds": draw_odds_i
+            }
+            
+            tableCheck('match_winner',[])
+            
+            scraperwiki.sqlite.save(unique_keys=[],table_name='match_winner',
+                                    data=data_1)
+            scraperwiki.sqlite.save(unique_keys=[],table_name='match_winner',
+                                    data=data_2)
+            scraperwiki.sqlite.save(unique_keys=[],table_name='match_winner',
+                                    data=data_draw)
+            
+            # print matchname,',',timestamp,',',bookie,',',winner_1,',',winner_1_odds_i
+            # print matchname,',',timestamp,',',bookie,',',winner_2,',',winner_2_odds_i
+            # print matchname,',',timestamp,',',bookie,',draw,',draw_odds_i
             i+=1
             
             
-# def tableCheck(table,base=None):
-# 	if base is None: base=[]
-# 	base=base+[ \
-# 			('time','datetime'), \
-#             ('match', 'text' ), \
-# 			('bookie','text'), \
-# 			('outcome','text'), \
-# 			('decodds', 'real') 	]
-# 	fields=', '.join([' '.join( map(str,item) ) for item in base ])
-#     tabledef="CREATE TABLE IF NOT EXISTS '{table}' ( {fields} )".format(table=table,fields=fields)
-#   	scraperwiki.sqlite.execute( tabledef )
+def tableCheck(table,base=None):
+    if base is None: base=[]
+    base=base+[ \
+            ('time','datetime'), \
+            ('match', 'text' ), \
+            ('bookie','text'), \
+            ('outcome','text'), \
+            ('decodds', 'real') 	]
+    fields=', '.join([' '.join( map(str,item) ) for item in base ])
+    tabledef="CREATE TABLE IF NOT EXISTS '{table}' ( {fields} )".format(table=table,fields=fields)
+    scraperwiki.sqlite.execute( tabledef )
 
 process = CrawlerProcess()
 process.crawl(OddscheckerSpider)
