@@ -36,11 +36,11 @@ class OddscheckerSpider(scrapy.Spider):
         winner_2_odds = response.css('#t1 > tr:nth-child(2) > td')
         draw_odds = response.css('#t1 > tr:nth-child(3) > td')
         
-        print winner_1 + ' vs ' + winner_2
+        #print winner_1 + ' vs ' + winner_2
         
         num_bookies = len(bookies)
         
-        print num_bookies,' bookies'
+        #print num_bookies,' bookies'
         
         for i in range(0, num_bookies-2):
             bookie = bookies.xpath('aside/a/@title').extract()[i]
