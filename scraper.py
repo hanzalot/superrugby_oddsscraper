@@ -8,7 +8,10 @@ class OddscheckerSpider(scrapy.Spider):
     
     #allowed_domains = ["http://www.oddschecker.com/"]
     start_urls = [
-        "http://www.oddschecker.com/rugby-union/super-rugby"
+        "http://www.oddschecker.com/rugby-union/super-rugby",
+        "http://www.oddschecker.com/football/english/premier-league",
+        "http://www.oddschecker.com/football/france/ligue-1",
+        "https://www.oddschecker.com/football/germany/bundesliga"
     ]
 
     def parse(self, response):
